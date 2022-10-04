@@ -1,5 +1,5 @@
 /**
- * <h3>Classes relating to menu data format.</h3>
+ * <h3>Implementation internals.</h3>
  * <p>
  *    Copyright 2022 ms5984, Retrox
  *    <p>
@@ -14,4 +14,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package io.github.ms5984.retrox.menu.model;
+@ApiStatus.Internal
+package io.github.ms5984.retrox.accessories.internal;
+
+import org.jetbrains.annotations.ApiStatus;

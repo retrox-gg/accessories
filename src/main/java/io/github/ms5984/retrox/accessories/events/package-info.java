@@ -1,5 +1,5 @@
 /**
- * <h3>Implementation internals.</h3>
+ * <h3>Public API using Bukkit's event system.</h3>
  * <p>
  *    Copyright 2022 ms5984, Retrox
  *    <p>
@@ -14,7 +14,4 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-@ApiStatus.Internal
-package io.github.ms5984.retrox.menu.internal;
-
-import org.jetbrains.annotations.ApiStatus;
+package io.github.ms5984.retrox.accessories.events;

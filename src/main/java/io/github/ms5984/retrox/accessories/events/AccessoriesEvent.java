@@ -1,4 +1,4 @@
-package io.github.ms5984.retrox.menu.events;
+package io.github.ms5984.retrox.accessories.events;
 /*
  *  Copyright 2022 ms5984, Retrox
  *
@@ -19,19 +19,19 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Base class for RetroxMenu events.
+ * Base class for Accessories events.
  *
  * @since 1.0.0
  * @author ms5984
  */
 @ApiStatus.NonExtendable
-public abstract class RetroxMenuEvent extends Event {
+public abstract class AccessoriesEvent extends Event {
     /**
-     * Base class for RetroxMenu events that can be cancelled.
+     * Base class for Accessories events that can be cancelled.
      *
      * @since 1.0.0
      */
-    public abstract static class Cancellable extends RetroxMenuEvent implements org.bukkit.event.Cancellable {
+    public abstract static class Cancellable extends AccessoriesEvent implements org.bukkit.event.Cancellable {
         private boolean cancelled;
 
         @Override

@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.ms5984.retrox</groupId>
-    <artifactId>menu</artifactId>
+    <artifactId>accessories</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>AccessoriesMenu</name>
-    <description>The player menu for Retrox</description>
+    <name>Accessories</name>
+    <description>A player accessories system for Retrox</description>
     <inceptionYear>2022</inceptionYear>
 
     <properties>

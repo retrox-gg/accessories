@@ -1,4 +1,4 @@
-package io.github.ms5984.retrox.menu.internal;
+package io.github.ms5984.retrox.accessories.internal;
 /*
  *  Copyright 2022 ms5984, Retrox
  *
@@ -15,8 +15,20 @@ package io.github.ms5984.retrox.menu.internal;
  *  limitations under the License.
  */
 
-import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public interface InventorySource {
-    Inventory inventory();
+/**
+ * Main plugin class.
+ */
+public final class AccessoriesPlugin extends JavaPlugin {
+
+    @Override
+    public void onEnable() {
+        // Plugin startup logic
+    }
+
+    @Override
+    public void onDisable() {
+        // Plugin shutdown logic
+    }
 }
