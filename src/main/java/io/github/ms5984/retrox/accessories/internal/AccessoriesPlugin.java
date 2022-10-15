@@ -122,14 +122,14 @@ public final class AccessoriesPlugin extends JavaPlugin {
         final var item = new ItemStack(material);
         final var itemMeta = item.getItemMeta();
         var name = getConfig().getString("placeholder.display-name");
-        if (name == null) name = "<reset><white>{category.name}";
-        itemMeta.displayName(processCategoryData(miniMessage.deserialize(name), category));
+        if (name == null) name = "{category.name}";
+        itemMeta.displayName(processCategoryData(miniMessage.deserialize("<!i><white>" + name), category));
         itemMeta.setCustomModelData(getConfig().getInt("placeholder.custom-model-data", 1));
         var lore = getConfig().getStringList("placeholder.lore");
         if (!lore.isEmpty()) {
             final ArrayList<Component> list = new ArrayList<>();
             for (String s : lore) {
-                list.add(processCategoryData(miniMessage.deserialize("<reset>" + s), category));
+                list.add(processCategoryData(miniMessage.deserialize("<!i><white>" + s), category));
             }
             itemMeta.lore(list);
         }
