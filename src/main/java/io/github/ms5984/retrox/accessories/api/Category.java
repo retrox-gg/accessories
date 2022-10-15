@@ -1,4 +1,4 @@
-package io.github.ms5984.retrox.accessories.model;
+package io.github.ms5984.retrox.accessories.api;
 /*
  *  Copyright 2022 ms5984, Retrox
  *
@@ -15,13 +15,19 @@ package io.github.ms5984.retrox.accessories.model;
  *  limitations under the License.
  */
 
-import org.intellij.lang.annotations.Pattern;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Marks a String representing a category.
+ * Represents a category.
  *
  * @since 1.0.0
  * @author ms5984
  */
-@Pattern("^[\\w-]+$")
-public @interface Category {}
+public interface Category {
+    /**
+     * Get the name of this category.
+     *
+     * @return the name
+     */
+    @NotNull String name();
+}

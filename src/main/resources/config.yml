@@ -1,0 +1,6 @@
+placeholder:
+  material: STONE
+  display-name: "<white>{category.name}"
+  custom-model-data: 1
+  lore:
+    - "No {category.name} Activated"
