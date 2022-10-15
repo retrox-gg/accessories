@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AccessoryHolderImpl implements AccessoryHolder {
+    static final int FIRST_ACCESSORY_SLOT_ID = 9; // Implementation specific, hide from public API
     private final Player player;
     private final ItemStack[] accessorySlots;
 
