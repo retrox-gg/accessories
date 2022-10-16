@@ -39,16 +39,19 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
             final var calculatedSlotIndex = FIRST_ACCESSORY_SLOT_ID + i;
             final var existingItem = playerInventory.getItem(calculatedSlotIndex);
             if (existingItem != null) {
-                // move existing item to vacant slot
-                final int emptySlot = playerInventory.firstEmpty(); // CB uses storage contents for this, so range is [0, 40] (plus -1)
-                // -1 if no empty slot; 36-39 are armor; 40 is offhand
-                if (emptySlot == -1 || (emptySlot > 35 && emptySlot != 40)) {
-                    // we will have to drop the existing item
-                    event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), existingItem);
-                    break;
-                } else {
-                    // we can move the item
-                    playerInventory.setItem(emptySlot, existingItem);
+                // check if the item is already a placeholder. if not we need to relocate it
+                if (!existingItem.getItemMeta().getPersistentDataContainer().has(plugin.placeholderUtil.placeholderKey())) {
+                    // search for vacant and appropriate slot
+                    final int emptySlot = playerInventory.firstEmpty(); // CB uses storage contents for this, so range is [0, 40] (plus -1)
+                    // -1 if no empty slot; 36-39 are armor; 40 is offhand
+                    if (emptySlot == -1 || (emptySlot > 35 && emptySlot != 40)) {
+                        // we will have to drop the existing item
+                        event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), existingItem);
+                        break;
+                    } else {
+                        // we can move the item
+                        playerInventory.setItem(emptySlot, existingItem);
+                    }
                 }
             }
             playerInventory.setItem(calculatedSlotIndex, plugin.placeholderUtil.generatePlaceholder(categoryIterator.hasNext() ? categoryIterator.next() : null, i));
