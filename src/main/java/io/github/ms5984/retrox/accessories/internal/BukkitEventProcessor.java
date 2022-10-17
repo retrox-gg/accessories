@@ -23,7 +23,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -98,12 +97,11 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
     public void onInventoryDrag(InventoryDragEvent event) {
         final var rawSlots = event.getRawSlots();
         final int totalSlots = event.getView().countSlots();
-        final int offset;
-        if (totalSlots == 46) {
-            offset = event.getView().getType() != InventoryType.CRAFTING ? 10 : 9;
-        } else {
-            offset = totalSlots - 35;
-        }
+        final int offset = switch (event.getView().getType()) {
+            case CRAFTING -> 9;
+            case WORKBENCH -> 10;
+            default -> totalSlots - 35;
+        };
         if (IntStream.range(offset, offset + AccessoryHolder.SLOTS).anyMatch(rawSlots::contains)) {
             // Player has dragged over an accessory slot
             event.setCancelled(true);
