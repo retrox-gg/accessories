@@ -54,7 +54,6 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                     if (emptySlot == -1 || (emptySlot > 35 && emptySlot != 40)) {
                         // we will have to drop the existing item
                         event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), existingItem);
-                        break;
                     } else {
                         // we can move the item
                         playerInventory.setItem(emptySlot, existingItem);
