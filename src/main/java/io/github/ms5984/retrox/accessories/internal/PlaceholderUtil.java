@@ -27,8 +27,9 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
-record PlaceholderUtil(@NotNull AccessoriesPlugin plugin, @NotNull NamespacedKey placeholderKey) {
+record PlaceholderUtil(@NotNull AccessoriesPlugin plugin, @NotNull NamespacedKey placeholderKey) implements Predicate<ItemStack> {
     public ItemStack generatePlaceholder(@Nullable Category category, @Range(from = 0, to = AccessoryHolder.SLOTS-1) int slot) {
         Material material;
         try {
@@ -58,5 +59,10 @@ record PlaceholderUtil(@NotNull AccessoriesPlugin plugin, @NotNull NamespacedKey
     private Component processCategoryData(Component component, @Nullable Category category) {
         if (category == null) return component;
         return component.replaceText(b -> b.matchLiteral("{category.name}").replacement(category.name()));
+    }
+
+    @Override
+    public boolean test(ItemStack itemStack) {
+        return itemStack != null && itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(placeholderKey, PersistentDataType.BYTE);
     }
 }

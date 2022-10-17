@@ -28,7 +28,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -45,21 +44,36 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
         for (int i = 0; i < AccessoryHolder.SLOTS; ++i) {
             final var calculatedSlotIndex = FIRST_ACCESSORY_SLOT_ID + i;
             final var existingItem = playerInventory.getItem(calculatedSlotIndex);
-            if (existingItem != null) {
-                // check if the item is already a placeholder. if not we need to relocate it
-                if (!existingItem.getItemMeta().getPersistentDataContainer().has(plugin.placeholderUtil.placeholderKey())) {
-                    // search for vacant and appropriate slot
-                    final int emptySlot = playerInventory.firstEmpty(); // CB uses storage contents for this, so range is [0, 40] (plus -1)
-                    // -1 if no empty slot; 36-39 are armor; 40 is offhand
-                    if (emptySlot == -1 || (emptySlot > 35 && emptySlot != 40)) {
-                        // we will have to drop the existing item
-                        event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), existingItem);
-                    } else {
-                        // we can move the item
-                        playerInventory.setItem(emptySlot, existingItem);
-                    }
+            // unless the slot is a placeholder, plan to relocate it
+            boolean relocate = !plugin.placeholderUtil.test(existingItem);
+            // Check if what we have is a valid accessory
+            if (relocate && AccessoryFilter.getInstance().test(existingItem)) {
+                // call activation event
+                if (activateAccessory(event.getPlayer(), existingItem)) {
+                    // don't relocate or replace if activation was successful
+                    continue;
                 }
             }
+            if (relocate && existingItem != null) {
+                // search for vacant and appropriate slot
+                final int emptySlot = playerInventory.firstEmpty(); // CB uses storage contents for this, so range is [0, 40] (plus -1)
+                // -1 if no empty slot; 36-39 are armor; 40 is offhand
+                if (emptySlot == -1 || (emptySlot > 35 && emptySlot != 40) || (emptySlot >= FIRST_ACCESSORY_SLOT_ID && emptySlot <= FIRST_ACCESSORY_SLOT_ID + AccessoryHolder.SLOTS)) {
+                    // try to stuff it
+                    playerInventory.setItem(calculatedSlotIndex, null);
+                    final var stuff = playerInventory.addItem(existingItem);
+                    if (!stuff.isEmpty()) {
+                        // we will have to drop it
+                        for (ItemStack item : stuff.values()) {
+                            event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), item);
+                        }
+                    }
+                } else {
+                    // we can simply move the item
+                    playerInventory.setItem(emptySlot, existingItem);
+                }
+            }
+            // set/replace with placeholder
             playerInventory.setItem(calculatedSlotIndex, plugin.placeholderUtil.generatePlaceholder(categoryIterator.hasNext() ? categoryIterator.next() : null, i));
         }
     }
@@ -81,7 +95,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                     // Is this an accessory?
                     if (AccessoryFilter.getInstance().test(currentItem)) {
                         deactivateAccessory(event, player, currentItem);
-                    } else if (currentItem != null && currentItem.getItemMeta().getPersistentDataContainer().has(plugin.placeholderUtil.placeholderKey(), PersistentDataType.BYTE)) {
+                    } else if (plugin.placeholderUtil.test(currentItem)) {
                         plugin.getComponentLogger().debug("Player {} tried to take a placeholder item from accessory slot #{}", player.getName(), event.getSlot());
                     }
                 }
@@ -92,8 +106,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                     if (AccessoryFilter.getInstance().test(event.getCursor())) {
                         final var currentItem = event.getCurrentItem();
                         // Is this a placeholder?
-                        //noinspection ConstantConditions
-                        if (currentItem.getItemMeta().getPersistentDataContainer().has(plugin.placeholderUtil.placeholderKey(), PersistentDataType.BYTE)) {
+                        if (plugin.placeholderUtil.test(currentItem)) {
                             // Fire event
                             if (activateAccessory(player, event.getCursor())) {
                                 // "swap" the item (replace the placeholder, remove the cursor item)
@@ -140,8 +153,8 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
         return !cancelled;
     }
 
-    private boolean activateAccessory(Player player, ItemStack cursorItem) {
-        final var preActivateEvent = new AccessoryPreActivateEvent(player, cursorItem);
+    private boolean activateAccessory(Player player, ItemStack accessory) {
+        final var preActivateEvent = new AccessoryPreActivateEvent(player, accessory);
         Bukkit.getPluginManager().callEvent(preActivateEvent);
         return !preActivateEvent.isCancelled();
     }
