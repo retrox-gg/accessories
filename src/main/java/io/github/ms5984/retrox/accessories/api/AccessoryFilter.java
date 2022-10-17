@@ -17,6 +17,7 @@ package io.github.ms5984.retrox.accessories.api;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +29,7 @@ import java.util.function.Predicate;
  * @since 1.0.0
  * @author ms5984
  */
+@ApiStatus.NonExtendable
 @FunctionalInterface
 public interface AccessoryFilter extends Predicate<ItemStack> {
     @Override
