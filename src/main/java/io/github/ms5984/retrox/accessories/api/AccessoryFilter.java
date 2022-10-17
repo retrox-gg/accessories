@@ -17,6 +17,7 @@ package io.github.ms5984.retrox.accessories.api;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -29,6 +30,10 @@ import java.util.function.Predicate;
  */
 @FunctionalInterface
 public interface AccessoryFilter extends Predicate<ItemStack> {
+    @Override
+    @Contract("null -> false")
+    boolean test(ItemStack itemStack);
+
     /**
      * Get the current filter instance.
      *

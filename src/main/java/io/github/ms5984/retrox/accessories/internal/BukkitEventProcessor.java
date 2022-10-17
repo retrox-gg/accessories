@@ -15,18 +15,24 @@ package io.github.ms5984.retrox.accessories.internal;
  *  limitations under the License.
  */
 
+import io.github.ms5984.retrox.accessories.api.AccessoryFilter;
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.HoverEvent;
+import io.github.ms5984.retrox.accessories.api.Category;
+import io.github.ms5984.retrox.accessories.events.AccessoryPreActivateEvent;
+import io.github.ms5984.retrox.accessories.events.AccessoryPreDeactivateEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.stream.IntStream;
 
 import static io.github.ms5984.retrox.accessories.internal.AccessoryHolderImpl.FIRST_ACCESSORY_SLOT_ID;
@@ -64,32 +70,54 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
     // Handle accessory slot clicks
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getClickedInventory() != event.getWhoClicked().getInventory()) return;
-        if (event.getSlot() < FIRST_ACCESSORY_SLOT_ID || event.getSlot() >= FIRST_ACCESSORY_SLOT_ID + AccessoryHolder.SLOTS) return;
-        // Slot clicked is an accessory slot
-        switch (event.getAction()) {
-            case PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
-                    DROP_ALL_SLOT, DROP_ONE_SLOT, MOVE_TO_OTHER_INVENTORY,
-                    HOTBAR_MOVE_AND_READD, HOTBAR_SWAP -> {
-                // Player is trying to take an item out of the slot
-                var take = Component.text("TAKE");
-                final var currentItem = event.getCurrentItem();
-                if (currentItem != null) {
-                    final var data = currentItem.getItemMeta().getPersistentDataContainer();
-                    if (data.has(plugin.placeholderUtil.placeholderKey(), PersistentDataType.BYTE)) {
-                        take = take.hoverEvent(HoverEvent.showText(Component.text("Placeholder for slot #" + data.get(plugin.placeholderUtil.placeholderKey(), PersistentDataType.BYTE))));
-                        event.setCancelled(true);
+        if (event.getWhoClicked() instanceof Player player) {
+            if (event.getClickedInventory() != player.getInventory()) return;
+            if (event.getSlot() < FIRST_ACCESSORY_SLOT_ID || event.getSlot() >= FIRST_ACCESSORY_SLOT_ID + AccessoryHolder.SLOTS) return;
+            // Slot clicked is an accessory slot
+            switch (event.getAction()) {
+                case PICKUP_ALL, PICKUP_SOME, PICKUP_HALF, PICKUP_ONE,
+                        DROP_ALL_SLOT, DROP_ONE_SLOT, MOVE_TO_OTHER_INVENTORY,
+                        HOTBAR_MOVE_AND_READD, HOTBAR_SWAP -> {
+                    // Player is trying to take an item out of the slot
+                    event.setCancelled(true);
+                    final var currentItem = event.getCurrentItem();
+                    // Is this an accessory?
+                    if (AccessoryFilter.getInstance().test(currentItem)) {
+                        deactivateAccessory(event, player, currentItem);
+                    } else if (currentItem != null && currentItem.getItemMeta().getPersistentDataContainer().has(plugin.placeholderUtil.placeholderKey(), PersistentDataType.BYTE)) {
+                        plugin.getComponentLogger().debug("Player {} tried to take a placeholder item from accessory slot #{}", player.getName(), event.getSlot());
                     }
                 }
-                event.getWhoClicked().sendMessage(take);
+                case SWAP_WITH_CURSOR -> {
+                    // Player is trying to replace the item in the slot
+                    event.setCancelled(true); // for now
+                    // Is the cursor item an accessory?
+                    if (AccessoryFilter.getInstance().test(event.getCursor())) {
+                        final var currentItem = event.getCurrentItem();
+                        // Is this a placeholder?
+                        //noinspection ConstantConditions
+                        if (currentItem.getItemMeta().getPersistentDataContainer().has(plugin.placeholderUtil.placeholderKey(), PersistentDataType.BYTE)) {
+                            // Fire event
+                            if (activateAccessory(player, event.getCursor())) {
+                                // "swap" the item (replace the placeholder, remove the cursor item)
+                                event.setCurrentItem(event.getCursor());
+                                event.getWhoClicked().setItemOnCursor(null);
+                            }
+                        } else if (AccessoryFilter.getInstance().test(currentItem)) {
+                            // We need to deactivate the current accessory
+                            if (deactivateAccessory(event, player, currentItem)) {
+                                // If that succeeded, fire activation event
+                                if (activateAccessory(player, event.getCursor())) {
+                                    // allow swap
+                                    event.setCancelled(false);
+                                }
+                            }
+                        }
+                    }
+                }
+                case NOTHING, PLACE_ALL, PLACE_SOME, PLACE_ONE, DROP_ALL_CURSOR, DROP_ONE_CURSOR, CLONE_STACK -> {}
+                default -> event.setCancelled(true);
             }
-            case PLACE_ALL, PLACE_SOME, PLACE_ONE, SWAP_WITH_CURSOR -> {
-                // Player is trying to put an item into the slot
-                event.getWhoClicked().sendMessage(Component.text("PUT"));
-                event.setCancelled(true); // for now
-            }
-            case NOTHING, DROP_ALL_CURSOR, DROP_ONE_CURSOR, CLONE_STACK -> {}
-            default -> event.setCancelled(true);
         }
     }
 
@@ -106,5 +134,33 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
             // Player has dragged over an accessory slot
             event.setCancelled(true);
         }
+    }
+
+    private boolean deactivateAccessory(InventoryClickEvent event, Player player, ItemStack currentItem) {
+        // Fire event
+        final var preDeactivateEvent = new AccessoryPreDeactivateEvent(player, currentItem);
+        Bukkit.getPluginManager().callEvent(preDeactivateEvent);
+        final var cancelled = preDeactivateEvent.isCancelled();
+        if (!cancelled) {
+            event.setCancelled(false);
+            // Inject a replacement placeholder
+            final Iterator<? extends Category> iterator = plugin.categoriesService.iterator();
+            if (iterator.hasNext()) {
+                int i = 0;
+                while (i < event.getSlot() - FIRST_ACCESSORY_SLOT_ID) {
+                    if (i > AccessoryHolder.SLOTS) break;
+                    iterator.next();
+                    ++i;
+                }
+                player.getInventory().setItem(event.getSlot(), plugin.placeholderUtil.generatePlaceholder(iterator.next(), i));
+            }
+        }
+        return !cancelled;
+    }
+
+    private boolean activateAccessory(Player player, ItemStack cursorItem) {
+        final var preActivateEvent = new AccessoryPreActivateEvent(player, cursorItem);
+        Bukkit.getPluginManager().callEvent(preActivateEvent);
+        return !preActivateEvent.isCancelled();
     }
 }

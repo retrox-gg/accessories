@@ -24,6 +24,6 @@ record AccessoryFilterImpl(@NotNull NamespacedKey key) implements AccessoryFilte
     @Override
     public boolean test(ItemStack itemStack) {
         // simply check for presence of any data persisted using provided key
-        return itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(key);
+        return itemStack != null && itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(key);
     }
 }
