@@ -26,14 +26,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
-import java.util.stream.IntStream;
 
 import static io.github.ms5984.retrox.accessories.internal.AccessoryHolderImpl.FIRST_ACCESSORY_SLOT_ID;
 
@@ -118,21 +116,6 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                 case NOTHING, PLACE_ALL, PLACE_SOME, PLACE_ONE, DROP_ALL_CURSOR, DROP_ONE_CURSOR, CLONE_STACK -> {}
                 default -> event.setCancelled(true);
             }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onInventoryDrag(InventoryDragEvent event) {
-        final var rawSlots = event.getRawSlots();
-        final int totalSlots = event.getView().countSlots();
-        final int offset = switch (event.getView().getType()) {
-            case CRAFTING -> 9;
-            case WORKBENCH -> 10;
-            default -> totalSlots - 35;
-        };
-        if (IntStream.range(offset, offset + AccessoryHolder.SLOTS).anyMatch(rawSlots::contains)) {
-            // Player has dragged over an accessory slot
-            event.setCancelled(true);
         }
     }
 
