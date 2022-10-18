@@ -1,5 +1,5 @@
 /**
- * <h3>Public API.</h3>
+ * Public API.
  * <p>
  *    Copyright 2022 ms5984, Retrox
  *    <p>

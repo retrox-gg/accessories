@@ -1,5 +1,5 @@
 /**
- * <h3>Implementation internals.</h3>
+ * Implementation internals.
  * <p>
  *    Copyright 2022 ms5984, Retrox
  *    <p>

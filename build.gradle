@@ -5,6 +5,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'signing'
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
 
@@ -35,13 +36,29 @@ processResources {
     expand(project.properties)
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:reference', '-quiet')
+}
+
+tasks.withType(SigningExtension) {
+    def signingKeyId = findProperty('signingKeyId')
+    def signingKey = findProperty('signingKey')
+    def signingKeyPassphrase = findProperty('signingKeyPassphrase')
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingKeyPassphrase)
+}
+
 publishing {
     publications {
-        maven(MavenPublication) {
+        impl(MavenPublication) {
             pom {
                 name = 'Accessories'
                 description = project.description
@@ -66,6 +83,12 @@ publishing {
                         name = 'Matt'
                         url = 'https://github.com/ms5984'
                     }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/Retrox-gg/accessories.git'
+                    developerConnection = 'scm:git:ssh://github.com/Retrox-gg/accessories'
+                    url = 'https://github.com/Retrox-gg/accessories'
                 }
             }
             from(components.java)

@@ -1,5 +1,5 @@
 /**
- * <h3>Public API using Bukkit's event system.</h3>
+ * Public API using Bukkit's event system.
  * <p>
  *    Copyright 2022 ms5984, Retrox
  *    <p>
