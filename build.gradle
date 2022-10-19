@@ -49,16 +49,12 @@ tasks.withType(Javadoc) {
     options.addStringOption('Xdoclint:reference', '-quiet')
 }
 
-tasks.withType(SigningExtension) {
-    def signingKeyId = findProperty('signingKeyId')
-    def signingKey = findProperty('signingKey')
-    def signingKeyPassphrase = findProperty('signingKeyPassphrase')
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingKeyPassphrase)
-}
-
 publishing {
     publications {
         impl(MavenPublication) {
+            signing {
+                sign publishing.publications.impl
+            }
             pom {
                 name = 'Accessories'
                 description = project.description
@@ -96,6 +92,15 @@ publishing {
     }
 }
 
+def signingKey = base64Decode(findProperty 'base64SigningKey')
+
+signing {
+    useInMemoryPgpKeys(
+            signingKey,
+            findProperty('signingKeyPassphrase')
+    )
+}
+
 // https://github.com/gradle-nexus/publish-plugin/#publishing-to-maven-central-via-sonatype-ossrh
 nexusPublishing {
     repositories {
@@ -104,4 +109,9 @@ nexusPublishing {
             snapshotRepositoryUrl = uri('https://s01.oss.sonatype.org/content/repositories/snapshots/')
         }
     }
+}
+
+private static def base64Decode(encodedString) {
+    if (encodedString == null) return null
+    return new String(encodedString.decodeBase64())
 }
