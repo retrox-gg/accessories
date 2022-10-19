@@ -15,29 +15,66 @@ package io.github.ms5984.retrox.accessories.internal;
  *  limitations under the License.
  */
 
-import io.github.ms5984.retrox.accessories.api.Category;
+import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.PropertyResourceBundle;
+import java.util.List;
 
 final class CategoriesService {
     private final LinkedHashMap<String, CategoryImpl> categories = new LinkedHashMap<>();
+    private final AccessoriesPlugin plugin;
 
-    CategoriesService() {}
+    CategoriesService(AccessoriesPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     void loadCategories() {
         if (!categories.isEmpty()) categories.clear();
-        final var bundle = PropertyResourceBundle.getBundle("categories");
-        final var keys = bundle.getKeys();
-        while (keys.hasMoreElements()) {
-            final var key = keys.nextElement();
-            final var category = new CategoryImpl(bundle.getString(key));
-            categories.put(key, category);
+        final var topSection = plugin.getConfig().getConfigurationSection("categories");
+        if (topSection == null) return;
+        for (String id : topSection.getKeys(false)) {
+            final var subSection = topSection.getConfigurationSection(id);
+            if (subSection == null) continue;
+            final var name = subSection.getString("name", id);
+            final var placeholderSection = subSection.getConfigurationSection("placeholder");
+            final CategoryImpl.PlaceholderTemplate template;
+            if (placeholderSection == null) {
+                template = new CategoryImpl.PlaceholderTemplate();
+            } else {
+                // See config.yml for more information on defaults
+                final var material = parseMaterial(placeholderSection.getString("material"));
+                final var displayName = parseDisplayName(placeholderSection.getString("display-name"));
+                final var customModelData = placeholderSection.getInt("custom-model-data", 1);
+                final var lore = parseLore(placeholderSection.getStringList("lore"));
+                template = new CategoryImpl.PlaceholderTemplate(material, displayName, customModelData, lore);
+            }
+            categories.put(id, new CategoryImpl(id, template));
         }
     }
 
-    public Iterator<? extends Category> iterator() {
+    public Iterator<CategoryImpl> iterator() {
         return categories.values().iterator();
+    }
+
+    // defaults to STONE
+    static Material parseMaterial(String materialName) {
+        if (materialName == null) return Material.STONE;
+        try {
+            return Material.valueOf(materialName);
+        } catch (IllegalArgumentException e) {
+            return Material.STONE;
+        }
+    }
+
+    static String parseDisplayName(String displayName) {
+        if (displayName == null) return "<white><name>";
+        return displayName;
+    }
+
+    static List<String> parseLore(@NotNull List<String> lore) {
+        if (lore.isEmpty()) return List.of("<!i><white>No <name> Activated");
+        return List.copyOf(lore);
     }
 }

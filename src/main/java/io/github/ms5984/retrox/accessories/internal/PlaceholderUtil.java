@@ -18,6 +18,7 @@ package io.github.ms5984.retrox.accessories.internal;
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
 import io.github.ms5984.retrox.accessories.api.Category;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -59,6 +60,11 @@ record PlaceholderUtil(@NotNull AccessoriesPlugin plugin, @NotNull NamespacedKey
     private Component processCategoryData(Component component, @Nullable Category category) {
         if (category == null) return component;
         return component.replaceText(b -> b.matchLiteral("{category.name}").replacement(category.name()));
+    }
+
+    private Component resolveCategoryComponent(@NotNull String mmText, @Nullable Category category) {
+        if (category == null) return plugin.miniMessage.deserialize(mmText);
+        return plugin.miniMessage.deserialize(mmText, Placeholder.parsed("name", category.name()));
     }
 
     @Override

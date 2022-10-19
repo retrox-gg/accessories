@@ -16,6 +16,15 @@ package io.github.ms5984.retrox.accessories.internal;
  */
 
 import io.github.ms5984.retrox.accessories.api.Category;
+import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
-record CategoryImpl(@NotNull String name) implements Category {}
+import java.util.List;
+
+record CategoryImpl(@NotNull String name, PlaceholderTemplate template) implements Category {
+    public record PlaceholderTemplate(@NotNull Material material, @NotNull String displayName, int customModelData, @NotNull List<String> lore) {
+        public PlaceholderTemplate() {
+            this(Material.STONE, "<white><name>", 1, List.of("<!i><white>No <name> Activated"));
+        }
+    }
+}

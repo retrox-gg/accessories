@@ -17,7 +17,6 @@ package io.github.ms5984.retrox.accessories.internal;
 
 import io.github.ms5984.retrox.accessories.api.AccessoryFilter;
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
-import io.github.ms5984.retrox.accessories.api.Category;
 import io.github.ms5984.retrox.accessories.events.AccessoryPreActivateEvent;
 import io.github.ms5984.retrox.accessories.events.AccessoryPreDeactivateEvent;
 import org.bukkit.Bukkit;
@@ -29,8 +28,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Iterator;
 
 import static io.github.ms5984.retrox.accessories.internal.AccessoryHolderImpl.FIRST_ACCESSORY_SLOT_ID;
 
@@ -139,7 +136,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
         if (!cancelled) {
             event.setCancelled(false);
             // Inject a replacement placeholder
-            final Iterator<? extends Category> iterator = plugin.categoriesService.iterator();
+            final var iterator = plugin.categoriesService.iterator();
             if (iterator.hasNext()) {
                 int i = 0;
                 while (i < event.getSlot() - FIRST_ACCESSORY_SLOT_ID) {
