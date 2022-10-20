@@ -16,9 +16,8 @@ package io.github.ms5984.retrox.accessories.internal;
  */
 
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
-import io.github.ms5984.retrox.accessories.api.Category;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -30,35 +29,25 @@ import java.util.ArrayList;
 import java.util.function.Predicate;
 
 record PlaceholderUtil(@NotNull AccessoriesPlugin plugin, @NotNull NamespacedKey placeholderKey) implements Predicate<ItemStack> {
-    public ItemStack generatePlaceholder(@Nullable Category category, @Range(from = 0, to = AccessoryHolder.SLOTS-1) int slot) {
-        Material material;
-        try {
-            material = Material.valueOf(plugin.getConfig().getString("placeholder.material"));
-        } catch (IllegalArgumentException | NullPointerException e) {
-            material = Material.STONE;
-        }
-        final var item = new ItemStack(material);
+    public ItemStack generatePlaceholder(@Nullable CategoryImpl category, @Range(from = 0, to = AccessoryHolder.SLOTS-1) int slot) {
+        final var template = category == null ? new CategoryImpl.PlaceholderTemplate() : category.template();
+        final var item = new ItemStack(template.material());
         final var itemMeta = item.getItemMeta();
-        var name = plugin.getConfig().getString("placeholder.display-name");
-        if (name == null) name = "{category.name}";
-        itemMeta.displayName(processCategoryData(plugin.miniMessage.deserialize("<!i><white>" + name), category));
-        itemMeta.setCustomModelData(plugin.getConfig().getInt("placeholder.custom-model-data", 1));
-        var lore = plugin.getConfig().getStringList("placeholder.lore");
-        if (!lore.isEmpty()) {
-            final ArrayList<Component> list = new ArrayList<>();
-            for (String s : lore) {
-                list.add(processCategoryData(plugin.miniMessage.deserialize("<!i><white>" + s), category));
-            }
-            itemMeta.lore(list);
+        itemMeta.displayName(resolveCategoryComponent(template.displayName(), category));
+        itemMeta.setCustomModelData(template.customModelData());
+        final ArrayList<Component> lore = new ArrayList<>();
+        for (final var line : template.lore()) {
+            lore.add(resolveCategoryComponent(line, category));
         }
+        itemMeta.lore(lore);
         itemMeta.getPersistentDataContainer().set(placeholderKey, PersistentDataType.BYTE, (byte) slot);
         item.setItemMeta(itemMeta);
         return item;
     }
 
-    private Component processCategoryData(Component component, @Nullable Category category) {
-        if (category == null) return component;
-        return component.replaceText(b -> b.matchLiteral("{category.name}").replacement(category.name()));
+    private Component resolveCategoryComponent(@NotNull String mmText, @Nullable CategoryImpl category) {
+        if (category == null) return plugin.miniMessage.deserialize(mmText);
+        return plugin.miniMessage.deserialize(mmText, Placeholder.parsed("name", category.name()));
     }
 
     @Override

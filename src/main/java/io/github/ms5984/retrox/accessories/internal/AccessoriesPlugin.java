@@ -29,7 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public final class AccessoriesPlugin extends JavaPlugin {
     private final AccessoryFilterImpl accessoryFilter = new AccessoryFilterImpl(new NamespacedKey(this, "accessory"));
-    final CategoriesService categoriesService = new CategoriesService();
+    final CategoriesService categoriesService = new CategoriesService(this);
     final PlaceholderUtil placeholderUtil = new PlaceholderUtil(this, new NamespacedKey(this, "placeholder"));
     final MiniMessage miniMessage = MiniMessage.builder()
             .tags(TagResolver.standard())

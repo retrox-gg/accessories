@@ -1,6 +1,20 @@
-placeholder:
-  material: STONE
-  display-name: "<white>{category.name}"
-  custom-model-data: 1
-  lore:
-    - "No {category.name} Activated"
+### Categories will be assigned to accessory slots in encounter order.
+##  Format:
+#   {id}:
+#     name: {name}
+#     placeholder:
+#       material: {material} # Defaults to STONE
+#       display-name: {display-name} # Defaults to "<white><name>"
+#       custom-model-data: {custom-model-data} # Defaults to 1
+#       lore: # Defaults to ["<!i><white>No <name> Activated"]
+#       - {lore1}
+#       - {lore2}
+categories:
+  robot:
+    name: Robot
+  backpack:
+    name: Backpack
+  rectangle:
+    name: Rectangle
+  ring:
+    name: Ring
