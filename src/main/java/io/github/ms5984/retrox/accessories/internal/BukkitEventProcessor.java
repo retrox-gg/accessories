@@ -24,10 +24,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 import static io.github.ms5984.retrox.accessories.internal.AccessoryHolderImpl.FIRST_ACCESSORY_SLOT_ID;
 
@@ -126,6 +129,19 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                 default -> event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onDeath(PlayerDeathEvent event) {
+        // get items in accessory slots
+        final ArrayList<ItemStack> accessorySlots = new ArrayList<>(AccessoryHolder.SLOTS);
+        for (int i = 0; i < AccessoryHolder.SLOTS; ++i) {
+            accessorySlots.add(event.getPlayer().getInventory().getItem(FIRST_ACCESSORY_SLOT_ID + i));
+        }
+        // remove from drops
+        event.getDrops().removeAll(accessorySlots);
+        // add to keep
+        event.getItemsToKeep().addAll(accessorySlots);
     }
 
     private boolean deactivateAccessory(InventoryClickEvent event, Player player, ItemStack currentItem) {
