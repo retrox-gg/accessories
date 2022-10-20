@@ -16,6 +16,7 @@ package io.github.ms5984.retrox.accessories.api;
  */
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -24,27 +25,39 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Predicate;
 
 /**
- * Checks if an item is an accessory.
+ * Manages NBT testing and namespaced key for accessory items.
  *
  * @since 1.0.0
  * @author ms5984
  */
 @ApiStatus.NonExtendable
-@FunctionalInterface
-public interface AccessoryFilter extends Predicate<ItemStack> {
+public interface AccessoryService extends Predicate<ItemStack> {
+    /**
+     * Check if an item is an accessory.
+     *
+     * @param itemStack an item
+     * @return true if the item is an accessory
+     */
     @Override
     @Contract("null -> false")
     boolean test(ItemStack itemStack);
 
     /**
-     * Get the current filter instance.
+     * Get the namespaced key used to identify accessory items.
      *
-     * @return the current filter instance
-     * @throws IllegalStateException if no filter is yet available
+     * @return the namespaced key for accessory items
      */
-    static @NotNull AccessoryFilter getInstance() {
-        final var load = Bukkit.getServicesManager().load(AccessoryFilter.class);
-        if (load == null) throw new IllegalStateException("AccessoryFilter not registered");
+    @NotNull NamespacedKey key();
+
+    /**
+     * Get the current service instance.
+     *
+     * @return the current service instance
+     * @throws IllegalStateException if no service is yet available
+     */
+    static @NotNull AccessoryService getInstance() {
+        final var load = Bukkit.getServicesManager().load(AccessoryService.class);
+        if (load == null) throw new IllegalStateException("AccessoryService not registered");
         return load;
     }
 }

@@ -15,7 +15,7 @@ package io.github.ms5984.retrox.accessories.internal;
  *  limitations under the License.
  */
 
-import io.github.ms5984.retrox.accessories.api.AccessoryFilter;
+import io.github.ms5984.retrox.accessories.api.AccessoryService;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
@@ -28,7 +28,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Main plugin class.
  */
 public final class AccessoriesPlugin extends JavaPlugin {
-    private final AccessoryFilterImpl accessoryFilter = new AccessoryFilterImpl(new NamespacedKey(this, "accessory"));
+    private final AccessoryServiceImpl accessoryFilter = new AccessoryServiceImpl(new NamespacedKey(this, "accessory"));
     final CategoriesService categoriesService = new CategoriesService(this);
     final PlaceholderUtil placeholderUtil = new PlaceholderUtil(this, new NamespacedKey(this, "placeholder"));
     final MiniMessage miniMessage = MiniMessage.builder()
@@ -40,7 +40,7 @@ public final class AccessoriesPlugin extends JavaPlugin {
         // Plugin startup logic
         categoriesService.loadCategories();
         // register accessory filter
-        Bukkit.getServicesManager().register(AccessoryFilter.class, accessoryFilter, this, ServicePriority.Normal);
+        Bukkit.getServicesManager().register(AccessoryService.class, accessoryFilter, this, ServicePriority.Normal);
         saveDefaultConfig();
         getConfig();
         Bukkit.getPluginManager().registerEvents(new BukkitEventProcessor(this), this);
