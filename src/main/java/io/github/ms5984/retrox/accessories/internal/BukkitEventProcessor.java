@@ -15,7 +15,7 @@ package io.github.ms5984.retrox.accessories.internal;
  *  limitations under the License.
  */
 
-import io.github.ms5984.retrox.accessories.api.AccessoryFilter;
+import io.github.ms5984.retrox.accessories.api.AccessoryService;
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
 import io.github.ms5984.retrox.accessories.events.AccessoryPreActivateEvent;
 import io.github.ms5984.retrox.accessories.events.AccessoryPreDeactivateEvent;
@@ -44,7 +44,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
             // unless the slot is a placeholder, plan to relocate it
             boolean relocate = !plugin.placeholderUtil.test(existingItem);
             // Check if what we have is a valid accessory
-            if (relocate && AccessoryFilter.getInstance().test(existingItem)) {
+            if (relocate && AccessoryService.getInstance().test(existingItem)) {
                 // call activation event
                 if (activateAccessory(event.getPlayer(), existingItem)) {
                     // don't relocate or replace if activation was successful
@@ -90,7 +90,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                     event.setCancelled(true);
                     final var currentItem = event.getCurrentItem();
                     // Is this an accessory?
-                    if (AccessoryFilter.getInstance().test(currentItem)) {
+                    if (AccessoryService.getInstance().test(currentItem)) {
                         deactivateAccessory(event, player, currentItem);
                     } else if (plugin.placeholderUtil.test(currentItem)) {
                         plugin.getComponentLogger().debug("Player {} tried to take a placeholder item from accessory slot #{}", player.getName(), event.getSlot());
@@ -100,7 +100,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                     // Player is trying to replace the item in the slot
                     event.setCancelled(true); // for now
                     // Is the cursor item an accessory?
-                    if (AccessoryFilter.getInstance().test(event.getCursor())) {
+                    if (AccessoryService.getInstance().test(event.getCursor())) {
                         final var currentItem = event.getCurrentItem();
                         // Is this a placeholder?
                         if (plugin.placeholderUtil.test(currentItem)) {
@@ -110,7 +110,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                                 event.setCurrentItem(event.getCursor());
                                 event.getWhoClicked().setItemOnCursor(null);
                             }
-                        } else if (AccessoryFilter.getInstance().test(currentItem)) {
+                        } else if (AccessoryService.getInstance().test(currentItem)) {
                             // We need to deactivate the current accessory
                             if (deactivateAccessory(event, player, currentItem)) {
                                 // If that succeeded, fire activation event

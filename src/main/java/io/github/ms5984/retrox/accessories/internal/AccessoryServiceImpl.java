@@ -15,12 +15,12 @@ package io.github.ms5984.retrox.accessories.internal;
  *  limitations under the License.
  */
 
-import io.github.ms5984.retrox.accessories.api.AccessoryFilter;
+import io.github.ms5984.retrox.accessories.api.AccessoryService;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-record AccessoryFilterImpl(@NotNull NamespacedKey key) implements AccessoryFilter {
+record AccessoryServiceImpl(@NotNull NamespacedKey key) implements AccessoryService {
     @Override
     public boolean test(ItemStack itemStack) {
         // simply check for presence of any data persisted using provided key
