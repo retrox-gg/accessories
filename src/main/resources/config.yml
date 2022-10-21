@@ -4,7 +4,7 @@
 #     name: {name}
 #     placeholder:
 #       material: {material} # Defaults to STONE
-#       display-name: {display-name} # Defaults to "<white><name>"
+#       display-name: {display-name} # Defaults to "<!i><white><name>"
 #       custom-model-data: {custom-model-data} # Defaults to 1
 #       lore: # Defaults to ["<!i><white>No <name> Activated"]
 #       - {lore1}

@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static io.github.ms5984.retrox.accessories.internal.CategoryImpl.PlaceholderTemplate.*;
+
 final class CategoriesService {
     private final LinkedHashMap<String, CategoryImpl> categories = new LinkedHashMap<>();
     private final AccessoriesPlugin plugin;
@@ -46,11 +48,11 @@ final class CategoriesService {
                 // See config.yml for more information on defaults
                 final var material = parseMaterial(placeholderSection.getString("material"));
                 final var displayName = parseDisplayName(placeholderSection.getString("display-name"));
-                final var customModelData = placeholderSection.getInt("custom-model-data", 1);
+                final var customModelData = placeholderSection.getInt("custom-model-data", DEFAULT_CUSTOM_MODEL_DATA);
                 final var lore = parseLore(placeholderSection.getStringList("lore"));
                 template = new CategoryImpl.PlaceholderTemplate(material, displayName, customModelData, lore);
             }
-            categories.put(id, new CategoryImpl(id, template));
+            categories.put(id, new CategoryImpl(name, template));
         }
     }
 
@@ -58,23 +60,24 @@ final class CategoriesService {
         return categories.values().iterator();
     }
 
-    // defaults to STONE
+    // see defaults
     static Material parseMaterial(String materialName) {
-        if (materialName == null) return Material.STONE;
-        try {
-            return Material.valueOf(materialName);
-        } catch (IllegalArgumentException e) {
-            return Material.STONE;
+        if (materialName != null) {
+            try {
+                return Material.valueOf(materialName);
+            } catch (IllegalArgumentException ignored) {
+            }
         }
+        return DEFAULT_MATERIAL;
     }
 
     static String parseDisplayName(String displayName) {
-        if (displayName == null) return "<white><name>";
-        return displayName;
+        if (displayName == null) return "<!i><white><name>";
+        return DEFAULT_DISPLAY_NAME;
     }
 
     static List<String> parseLore(@NotNull List<String> lore) {
-        if (lore.isEmpty()) return List.of("<!i><white>No <name> Activated");
-        return List.copyOf(lore);
+        if (!lore.isEmpty()) return List.copyOf(lore);
+        return List.copyOf(DEFAULT_LORE);
     }
 }
