@@ -23,8 +23,12 @@ import java.util.List;
 
 record CategoryImpl(@NotNull String name, PlaceholderTemplate template) implements Category {
     public record PlaceholderTemplate(@NotNull Material material, @NotNull String displayName, int customModelData, @NotNull List<String> lore) {
+        public static final Material DEFAULT_MATERIAL = Material.STONE;
+        public static final String DEFAULT_DISPLAY_NAME = "<!i><white><name>";
+        public static final int DEFAULT_CUSTOM_MODEL_DATA = 1;
+        public static final List<String> DEFAULT_LORE = List.of("<!i><white>No <name> Activated");
         public PlaceholderTemplate() {
-            this(Material.STONE, "<white><name>", 1, List.of("<!i><white>No <name> Activated"));
+            this(DEFAULT_MATERIAL, DEFAULT_DISPLAY_NAME, DEFAULT_CUSTOM_MODEL_DATA, DEFAULT_LORE);
         }
     }
 }
