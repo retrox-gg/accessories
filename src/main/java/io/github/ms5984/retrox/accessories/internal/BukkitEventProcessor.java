@@ -131,6 +131,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
         }
     }
 
+    // Prevent accessory (slot) drops on death and designate as "to keep"
     @EventHandler(ignoreCancelled = true)
     public void onDeath(PlayerDeathEvent event) {
         // get items in accessory slots
