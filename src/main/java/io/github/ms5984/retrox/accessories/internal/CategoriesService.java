@@ -72,7 +72,7 @@ final class CategoriesService {
     }
 
     static String parseDisplayName(String displayName) {
-        if (displayName == null) return "<!i><white><name>";
+        if (displayName != null) return displayName;
         return DEFAULT_DISPLAY_NAME;
     }
 
