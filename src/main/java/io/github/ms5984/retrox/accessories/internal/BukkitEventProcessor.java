@@ -26,9 +26,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
 
@@ -94,7 +96,20 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                     final var currentItem = event.getCurrentItem();
                     // Is this an accessory?
                     if (AccessoryService.getInstance().test(currentItem)) {
-                        deactivateAccessory(event, player, currentItem);
+                        if (deactivateAccessory(player, currentItem)) {
+                            // Inject a replacement placeholder
+                            final int accessorySlot = convertSlot(event.getSlot());
+                            final var iterator = plugin.categoriesService.iterator();
+                            int i = 0;
+                            while (i < accessorySlot) {
+                                if (!iterator.hasNext()) break;
+                                iterator.next();
+                                ++i;
+                            }
+                            player.getInventory().setItem(event.getSlot(), plugin.placeholderUtil.generatePlaceholder(iterator.next(), i));
+                            // Place the accessory on the cursor
+                            player.setItemOnCursor(currentItem);
+                        }
                     } else if (plugin.placeholderUtil.test(currentItem)) {
                         plugin.getComponentLogger().debug("Player {} tried to take a placeholder item from accessory slot #{}", player.getName(), event.getSlot());
                     }
@@ -115,7 +130,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                             }
                         } else if (AccessoryService.getInstance().test(currentItem)) {
                             // We need to deactivate the current accessory
-                            if (deactivateAccessory(event, player, currentItem)) {
+                            if (deactivateAccessory(player, currentItem)) {
                                 // If that succeeded, fire activation event
                                 if (activateAccessory(player, event.getCursor())) {
                                     // allow swap
@@ -125,10 +140,16 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                         }
                     }
                 }
-                case NOTHING, PLACE_ALL, PLACE_SOME, PLACE_ONE, DROP_ALL_CURSOR, DROP_ONE_CURSOR, CLONE_STACK -> {}
+                case NOTHING, DROP_ALL_CURSOR, DROP_ONE_CURSOR, CLONE_STACK -> {}
                 default -> event.setCancelled(true);
             }
         }
+    }
+
+    // Prevent drag-placement of any accessory
+    @EventHandler(ignoreCancelled = true)
+    public void onAccessoryDrag(InventoryDragEvent event) {
+        if (AccessoryService.getInstance().test(event.getOldCursor())) event.setCancelled(true);
     }
 
     // Prevent accessory (slot) drops on death and designate as "to keep"
@@ -145,31 +166,21 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
         event.getItemsToKeep().addAll(accessorySlots);
     }
 
-    private boolean deactivateAccessory(InventoryClickEvent event, Player player, ItemStack currentItem) {
+    private boolean deactivateAccessory(Player player, ItemStack currentItem) {
         // Fire event
         final var preDeactivateEvent = new AccessoryPreDeactivateEvent(player, currentItem);
         Bukkit.getPluginManager().callEvent(preDeactivateEvent);
-        final var cancelled = preDeactivateEvent.isCancelled();
-        if (!cancelled) {
-            event.setCancelled(false);
-            // Inject a replacement placeholder
-            final var iterator = plugin.categoriesService.iterator();
-            if (iterator.hasNext()) {
-                int i = 0;
-                while (i < event.getSlot() - FIRST_ACCESSORY_SLOT_ID) {
-                    if (i > AccessoryHolder.SLOTS) break;
-                    iterator.next();
-                    ++i;
-                }
-                player.getInventory().setItem(event.getSlot(), plugin.placeholderUtil.generatePlaceholder(iterator.next(), i));
-            }
-        }
-        return !cancelled;
+        return !preDeactivateEvent.isCancelled();
     }
 
     private boolean activateAccessory(Player player, ItemStack accessory) {
         final var preActivateEvent = new AccessoryPreActivateEvent(player, accessory);
         Bukkit.getPluginManager().callEvent(preActivateEvent);
         return !preActivateEvent.isCancelled();
+    }
+
+    //
+    private static @Range(from = 0, to = AccessoryHolder.SLOTS - 1) int convertSlot(@Range(from = FIRST_ACCESSORY_SLOT_ID, to = FIRST_ACCESSORY_SLOT_ID + AccessoryHolder.SLOTS) int slot) {
+        return slot - FIRST_ACCESSORY_SLOT_ID;
     }
 }
