@@ -21,8 +21,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.github.ms5984.retrox.accessories.internal.CategoryImpl.PlaceholderTemplate.*;
+import static io.github.ms5984.retrox.accessories.internal.ColorLib.processDisplayName;
 
 final class CategoriesService {
     private final LinkedHashMap<String, CategoryImpl> categories = new LinkedHashMap<>();
@@ -72,12 +74,12 @@ final class CategoriesService {
     }
 
     static String parseDisplayName(String displayName) {
-        if (displayName == null) return "<!i><white><name>";
+        if (displayName != null) return processDisplayName(displayName);
         return DEFAULT_DISPLAY_NAME;
     }
 
     static List<String> parseLore(@NotNull List<String> lore) {
-        if (!lore.isEmpty()) return List.copyOf(lore);
+        if (!lore.isEmpty()) return lore.stream().map(ColorLib::processLoreLine).collect(Collectors.toList());
         return List.copyOf(DEFAULT_LORE);
     }
 }
