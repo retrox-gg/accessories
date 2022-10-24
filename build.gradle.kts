@@ -22,7 +22,7 @@ dependencies {
 }
 
 group = "io.github.ms5984.retrox"
-version = "0.1.0"
+version = if (findProperty("version")!! != Project.DEFAULT_VERSION) version else "0.1.1"
 description = "A player accessories system for Retrox"
 
 java {
