@@ -24,7 +24,7 @@ import java.util.List;
 record CategoryImpl(@NotNull String name, PlaceholderTemplate template) implements Category {
     public record PlaceholderTemplate(@NotNull Material material, @NotNull String displayName, int customModelData, @NotNull List<String> lore) {
         public static final Material DEFAULT_MATERIAL = Material.STONE;
-        public static final String DEFAULT_DISPLAY_NAME = "<!i><white><name>";
+        public static final String DEFAULT_DISPLAY_NAME = "<!i><name>";
         public static final int DEFAULT_CUSTOM_MODEL_DATA = 1;
         public static final List<String> DEFAULT_LORE = List.of("<!i><white>No <name> Activated");
         public PlaceholderTemplate() {
