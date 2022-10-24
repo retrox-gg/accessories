@@ -21,7 +21,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Base class for Accessories events.
  *
- * @since 1.0.0
+ * @since 0.1.0
  * @author ms5984
  */
 @ApiStatus.NonExtendable
@@ -29,7 +29,7 @@ public abstract class AccessoriesEvent extends Event {
     /**
      * Base class for Accessories events that can be cancelled.
      *
-     * @since 1.0.0
+     * @since 0.1.0
      */
     public abstract static class Cancellable extends AccessoriesEvent implements org.bukkit.event.Cancellable {
         private boolean cancelled;

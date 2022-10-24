@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * Represents an accessory holder.
  *
- * @since 1.0.0
+ * @since 0.1.0
  * @author ms5984
  */
 @ApiStatus.NonExtendable

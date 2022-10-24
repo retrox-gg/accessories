@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a category.
  *
- * @since 1.0.0
+ * @since 0.1.0
  * @author ms5984
  */
 public interface Category {

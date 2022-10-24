@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Called as an accessory is being deactivated.
  *
- * @since 1.0.0
+ * @since 0.1.0
  * @author ms5984
  */
 public final class AccessoryPreDeactivateEvent extends AccessoriesEvent.Cancellable {
