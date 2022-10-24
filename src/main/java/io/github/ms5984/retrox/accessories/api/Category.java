@@ -15,6 +15,7 @@ package io.github.ms5984.retrox.accessories.api;
  *  limitations under the License.
  */
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 0.1.0
  * @author ms5984
  */
+@ApiStatus.NonExtendable
 public interface Category {
     /**
      * Get the name of this category.

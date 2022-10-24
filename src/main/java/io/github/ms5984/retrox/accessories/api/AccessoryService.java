@@ -15,6 +15,7 @@ package io.github.ms5984.retrox.accessories.api;
  *  limitations under the License.
  */
 
+import io.github.ms5984.retrox.accessories.model.Accessory;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -22,10 +23,11 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * Manages NBT testing and namespaced key for accessory items.
+ * Manages NBT metadata for accessory items.
  *
  * @since 0.1.0
  * @author ms5984
@@ -48,6 +50,25 @@ public interface AccessoryService extends Predicate<ItemStack> {
      * @return the namespaced key for accessory items
      */
     @NotNull NamespacedKey key();
+
+    /**
+     * Add NBT to an item to mark it as an accessory.
+     *
+     * @param item an item
+     * @param category the category of the accessory
+     * @return true if the item was updated
+     * @since 0.1.1
+     */
+    boolean addNBT(@NotNull ItemStack item, @NotNull Category category);
+
+    /**
+     * Get the category of an accessory item.
+     *
+     * @param item an accessory item
+     * @return the category of the accessory, if present
+     * @since 0.1.1
+     */
+    @NotNull Optional<Category> resolveNBT(@Accessory @NotNull ItemStack item);
 
     /**
      * Get the current service instance.

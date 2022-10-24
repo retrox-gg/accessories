@@ -16,6 +16,8 @@ package io.github.ms5984.retrox.accessories.events;
  */
 
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
+import io.github.ms5984.retrox.accessories.api.AccessoryService;
+import io.github.ms5984.retrox.accessories.api.Category;
 import io.github.ms5984.retrox.accessories.internal.AccessoryHolderImpl;
 import io.github.ms5984.retrox.accessories.model.Accessory;
 import org.bukkit.entity.Player;
@@ -61,6 +63,17 @@ public final class AccessoryPreActivateEvent extends AccessoriesEvent.Cancellabl
      */
     public @Accessory ItemStack getActivatingAccessory() {
         return activatingAccessory;
+    }
+
+    /**
+     * Get the category to which the accessory belongs.
+     *
+     * @return a category object
+     * @throws IllegalStateException if the category cannot be loaded
+     * @since 0.1.1
+     */
+    @NotNull Category getCategory() throws IllegalStateException {
+        return AccessoryService.getInstance().resolveNBT(activatingAccessory).orElseThrow(IllegalStateException::new);
     }
 
     // elements below required for Event contract
