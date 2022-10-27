@@ -44,6 +44,7 @@ public final class AccessoriesPlugin extends JavaPlugin {
         getConfig();
         categoriesService.loadCategories();
         Bukkit.getPluginManager().registerEvents(new BukkitEventProcessor(this), this);
+        Bukkit.getPluginManager().registerEvents(new AccessoriesEventProcessor(this), this);
     }
 
     @Override

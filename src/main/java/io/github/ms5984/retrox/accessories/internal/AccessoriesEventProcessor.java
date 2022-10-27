@@ -15,6 +15,7 @@ package io.github.ms5984.retrox.accessories.internal;
  *  limitations under the License.
  */
 
+import io.github.ms5984.retrox.accessories.api.AccessoryService;
 import io.github.ms5984.retrox.accessories.events.AccessoryPreActivateEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,6 +30,14 @@ record AccessoriesEventProcessor(@NotNull AccessoriesPlugin plugin) implements L
     // prevent placement of accessories in slots according to category
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onAccessoryActivateCategoryDetect(AccessoryPreActivateEvent event) {
-        // TODO
+        // If the accessory is not in the category, cancel the event
+        final var category = event.getTargetSlot().category();
+        if (AccessoryService.getInstance()
+                .resolveNBT(event.getActivatingAccessory())
+                .filter(category::equals)
+                .isEmpty()) {
+            // The category is not the same
+            event.setCancelled(true);
+        }
     }
 }
