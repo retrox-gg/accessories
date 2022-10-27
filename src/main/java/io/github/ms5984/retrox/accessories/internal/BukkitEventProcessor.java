@@ -50,8 +50,11 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
             boolean relocate = !plugin.placeholderUtil.test(existingItem);
             // Check if what we have is a valid accessory
             if (relocate && AccessoryService.getInstance().test(existingItem)) {
+                // get category of the slot (this might also fix a bug where category is skipped)
+                if (!categoryIterator.hasNext()) break;
+                final var category = categoryIterator.next();
                 // call activation event
-                if (activateAccessory(event.getPlayer(), existingItem)) {
+                if (activateAccessory(event.getPlayer(), existingItem, new AccessorySlotImpl(i, category))) {
                     // don't relocate or replace if activation was successful
                     continue;
                 }
@@ -101,11 +104,11 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                             final int accessorySlot = convertSlot(event.getSlot());
                             final var iterator = plugin.categoriesService.iterator();
                             int i = 0;
-                            while (i < accessorySlot) {
-                                if (!iterator.hasNext()) break;
+                            while (i < accessorySlot && iterator.hasNext()) {
                                 iterator.next();
                                 ++i;
                             }
+                            if (!iterator.hasNext()) throw new IllegalStateException("No category configured for accessory slot " + accessorySlot);
                             player.getInventory().setItem(event.getSlot(), plugin.placeholderUtil.generatePlaceholder(iterator.next(), i));
                             // Place the accessory on the cursor
                             player.setItemOnCursor(currentItem);
@@ -123,7 +126,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                         // Is this a placeholder?
                         if (plugin.placeholderUtil.test(currentItem)) {
                             // Fire event
-                            if (activateAccessory(player, event.getCursor())) {
+                            if (activateAccessoryCalculateCategory(player, event.getCursor(), convertSlot(event.getSlot()))) {
                                 // "swap" the item (replace the placeholder, remove the cursor item)
                                 event.setCurrentItem(event.getCursor());
                                 event.getWhoClicked().setItemOnCursor(null);
@@ -132,7 +135,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                             // We need to deactivate the current accessory
                             if (deactivateAccessory(player, currentItem)) {
                                 // If that succeeded, fire activation event
-                                if (activateAccessory(player, event.getCursor())) {
+                                if (activateAccessoryCalculateCategory(player, event.getCursor(), convertSlot(event.getSlot()))) {
                                     // allow swap
                                     event.setCancelled(false);
                                 }
@@ -173,10 +176,22 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
         return !preDeactivateEvent.isCancelled();
     }
 
-    private boolean activateAccessory(Player player, ItemStack accessory) {
-        final var preActivateEvent = new AccessoryPreActivateEvent(player, accessory);
+    private boolean activateAccessory(Player player, ItemStack accessory, AccessorySlotImpl slot) {
+        final var preActivateEvent = new AccessoryPreActivateEvent(player, accessory, slot);
         Bukkit.getPluginManager().callEvent(preActivateEvent);
         return !preActivateEvent.isCancelled();
+    }
+
+    private boolean activateAccessoryCalculateCategory(Player player, ItemStack accessory, int index) {
+        // Get the slot category
+        final var iterator = plugin.categoriesService.iterator();
+        int i = 0;
+        while (i < index && iterator.hasNext()) {
+            iterator.next();
+            ++i;
+        }
+        if (!iterator.hasNext()) throw new IllegalStateException("No category configured for accessory slot " + index);
+        return activateAccessory(player, accessory, new AccessorySlotImpl(index, iterator.next()));
     }
 
     //
