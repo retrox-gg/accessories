@@ -19,6 +19,7 @@ import io.github.ms5984.retrox.accessories.api.AccessoryService;
 import io.github.ms5984.retrox.accessories.api.Category;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -32,13 +33,22 @@ record AccessoryServiceImpl(@NotNull AccessoriesPlugin plugin, @NotNull Namespac
 
     @Override
     public boolean addNBT(@NotNull ItemStack item, @NotNull Category category) {
-        // TODO
+        final var id = plugin.categoriesService.getId(category);
+        if (id.isPresent()) {
+            final var meta = item.getItemMeta();
+            meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, id.get());
+            item.setItemMeta(meta);
+            return true;
+        }
         return false;
     }
 
     @Override
-    public @NotNull Optional<Category> resolveNBT(@NotNull ItemStack item) {
-        // TODO
+    public @NotNull Optional<CategoryImpl> resolveNBT(@NotNull ItemStack item) {
+        final var data = item.getItemMeta().getPersistentDataContainer();
+        if (data.has(key, PersistentDataType.STRING)) {
+            return plugin.categoriesService.getCategory(data.get(key, PersistentDataType.STRING));
+        }
         return Optional.empty();
     }
 }

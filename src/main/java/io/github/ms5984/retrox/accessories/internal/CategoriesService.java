@@ -15,12 +15,15 @@ package io.github.ms5984.retrox.accessories.internal;
  *  limitations under the License.
  */
 
+import io.github.ms5984.retrox.accessories.api.Category;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.github.ms5984.retrox.accessories.internal.CategoryImpl.PlaceholderTemplate.*;
@@ -56,6 +59,18 @@ final class CategoriesService {
             }
             categories.put(id, new CategoryImpl(name, template));
         }
+    }
+
+    public Optional<CategoryImpl> getCategory(String id) {
+        if (id == null) return Optional.empty();
+        return Optional.ofNullable(categories.get(id));
+    }
+
+    public Optional<String> getId(@NotNull Category category) {
+        return categories.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(category))
+                .map(Map.Entry::getKey)
+                .findAny();
     }
 
     public Iterator<CategoryImpl> iterator() {

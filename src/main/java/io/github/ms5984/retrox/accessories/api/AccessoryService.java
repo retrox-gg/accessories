@@ -68,7 +68,7 @@ public interface AccessoryService extends Predicate<ItemStack> {
      * @return the category of the accessory, if present
      * @since 0.1.1
      */
-    @NotNull Optional<Category> resolveNBT(@Accessory @NotNull ItemStack item);
+    @NotNull Optional<? extends Category> resolveNBT(@Accessory @NotNull ItemStack item);
 
     /**
      * Get the current service instance.
