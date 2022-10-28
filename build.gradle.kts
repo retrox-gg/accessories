@@ -74,9 +74,9 @@ publishing {
                 }
 
                 scm {
-                    connection.set("scm:git:git://github.com/Retrox-gg/accessories.git")
-                    developerConnection.set("scm:git:ssh://github.com/Retrox-gg/accessories")
-                    url.set("https://github.com/Retrox-gg/accessories")
+                    connection.set("scm:git:git://github.com/retrox-gg/accessories.git")
+                    developerConnection.set("scm:git:ssh://github.com/retrox-gg/accessories")
+                    url.set("https://github.com/retrox-gg/accessories")
                 }
             }
             from(components["java"])
