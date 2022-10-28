@@ -16,14 +16,39 @@ package io.github.ms5984.retrox.accessories.internal;
  */
 
 import io.github.ms5984.retrox.accessories.api.AccessoryService;
+import io.github.ms5984.retrox.accessories.api.Category;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-record AccessoryServiceImpl(@NotNull NamespacedKey key) implements AccessoryService {
+import java.util.Optional;
+
+record AccessoryServiceImpl(@NotNull AccessoriesPlugin plugin, @NotNull NamespacedKey key) implements AccessoryService {
     @Override
     public boolean test(ItemStack itemStack) {
         // simply check for presence of any data persisted using provided key
         return itemStack != null && itemStack.hasItemMeta() && itemStack.getItemMeta().getPersistentDataContainer().has(key);
+    }
+
+    @Override
+    public boolean addNBT(@NotNull ItemStack item, @NotNull Category category) {
+        final var id = plugin.categoriesService.getId(category);
+        if (id.isPresent()) {
+            final var meta = item.getItemMeta();
+            meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, id.get());
+            item.setItemMeta(meta);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public @NotNull Optional<CategoryImpl> resolveNBT(@NotNull ItemStack item) {
+        final var data = item.getItemMeta().getPersistentDataContainer();
+        if (data.has(key, PersistentDataType.STRING)) {
+            return plugin.categoriesService.getCategory(data.get(key, PersistentDataType.STRING));
+        }
+        return Optional.empty();
     }
 }

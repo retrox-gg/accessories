@@ -1,4 +1,4 @@
-package io.github.ms5984.retrox.accessories.api;
+package io.github.ms5984.retrox.accessories.internal;
 /*
  *  Copyright 2022 ms5984, Retrox
  *
@@ -15,21 +15,14 @@ package io.github.ms5984.retrox.accessories.api;
  *  limitations under the License.
  */
 
-import org.jetbrains.annotations.ApiStatus;
+import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
+import io.github.ms5984.retrox.accessories.api.AccessorySlot;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 /**
- * Represents a category.
- *
- * @since 0.1.0
- * @author ms5984
+ * @param index the index of this slot
+ * @param category the accessory category of this slot
+ * @since 0.1.1
  */
-@ApiStatus.NonExtendable
-public interface Category {
-    /**
-     * Get the name of this category.
-     *
-     * @return the name
-     */
-    @NotNull String name();
-}
+record AccessorySlotImpl(@Range(from = 0, to = AccessoryHolder.SLOTS - 1) int index, @NotNull CategoryImpl category) implements AccessorySlot {}

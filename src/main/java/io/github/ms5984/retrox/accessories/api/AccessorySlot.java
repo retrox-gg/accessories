@@ -15,21 +15,31 @@ package io.github.ms5984.retrox.accessories.api;
  *  limitations under the License.
  */
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 /**
- * Represents a category.
+ * Represents an accessory slot.
  *
- * @since 0.1.0
+ * @since 0.1.1
  * @author ms5984
  */
-@ApiStatus.NonExtendable
-public interface Category {
+public interface AccessorySlot {
     /**
-     * Get the name of this category.
+     * Get the index of this slot.
+     * <p>
+     * Slots are zero-indexed, left to right.
      *
-     * @return the name
+     * @return the index of this slot
      */
-    @NotNull String name();
+    @Range(from = 0, to = AccessoryHolder.SLOTS - 1) int index();
+
+    /**
+     * Get the category of this slot.
+     * <p>
+     * Only accessories of this category should be placed in this slot.
+     *
+     * @return the accessory category of this slot
+     */
+    @NotNull Category category();
 }

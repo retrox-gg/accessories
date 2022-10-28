@@ -16,6 +16,9 @@ package io.github.ms5984.retrox.accessories.events;
  */
 
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
+import io.github.ms5984.retrox.accessories.api.AccessoryService;
+import io.github.ms5984.retrox.accessories.api.AccessorySlot;
+import io.github.ms5984.retrox.accessories.api.Category;
 import io.github.ms5984.retrox.accessories.internal.AccessoryHolderImpl;
 import io.github.ms5984.retrox.accessories.model.Accessory;
 import org.bukkit.entity.Player;
@@ -33,16 +36,19 @@ public final class AccessoryPreActivateEvent extends AccessoriesEvent.Cancellabl
     private static final HandlerList HANDLERS = new HandlerList(); // per Event contract
     private final @NotNull AccessoryHolder player;
     private final @Accessory ItemStack activatingAccessory;
+    private final @NotNull AccessorySlot slot;
 
     /**
      * Create a new event.
      *
      * @param player the player activating the accessory
      * @param activatingAccessory the accessory being activated
+     * @param slot the slot the accessory is being activated on
      */
-    public AccessoryPreActivateEvent(@NotNull Player player, @Accessory ItemStack activatingAccessory) {
+    public AccessoryPreActivateEvent(@NotNull Player player, @Accessory ItemStack activatingAccessory, @NotNull AccessorySlot slot) {
         this.player = new AccessoryHolderImpl(player);
         this.activatingAccessory = activatingAccessory;
+        this.slot = slot;
     }
 
     /**
@@ -61,6 +67,27 @@ public final class AccessoryPreActivateEvent extends AccessoriesEvent.Cancellabl
      */
     public @Accessory ItemStack getActivatingAccessory() {
         return activatingAccessory;
+    }
+
+    /**
+     * Get the accessory slot the item was placed in.
+     *
+     * @return the slot the accessory was placed in
+     * @since 0.1.1
+     */
+    public @NotNull AccessorySlot getTargetSlot() {
+        return slot;
+    }
+
+    /**
+     * Get the category to which the accessory belongs.
+     *
+     * @return a category object
+     * @throws IllegalStateException if the category cannot be loaded
+     * @since 0.1.1
+     */
+    @NotNull Category getCategory() throws IllegalStateException {
+        return AccessoryService.getInstance().resolveNBT(activatingAccessory).orElseThrow(IllegalStateException::new);
     }
 
     // elements below required for Event contract

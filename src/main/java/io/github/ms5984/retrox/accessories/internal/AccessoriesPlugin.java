@@ -28,7 +28,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Main plugin class.
  */
 public final class AccessoriesPlugin extends JavaPlugin {
-    private final AccessoryServiceImpl accessoryService = new AccessoryServiceImpl(new NamespacedKey(this, "accessory"));
+    private final AccessoryServiceImpl accessoryService = new AccessoryServiceImpl(this, new NamespacedKey(this, "accessory"));
     final CategoriesService categoriesService = new CategoriesService(this);
     final PlaceholderUtil placeholderUtil = new PlaceholderUtil(this, new NamespacedKey(this, "placeholder"));
     final MiniMessage miniMessage = MiniMessage.builder()
@@ -44,6 +44,7 @@ public final class AccessoriesPlugin extends JavaPlugin {
         getConfig();
         categoriesService.loadCategories();
         Bukkit.getPluginManager().registerEvents(new BukkitEventProcessor(this), this);
+        Bukkit.getPluginManager().registerEvents(new AccessoriesEventProcessor(this), this);
     }
 
     @Override
