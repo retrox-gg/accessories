@@ -15,6 +15,8 @@ package io.github.ms5984.retrox.accessories.internal;
  *  limitations under the License.
  */
 
+import io.github.ms5984.commonlib.taglib.LegacyTextProcessor;
+import io.github.ms5984.commonlib.taglib.TagLib;
 import io.github.ms5984.retrox.accessories.api.Category;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +29,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.github.ms5984.retrox.accessories.internal.CategoryImpl.PlaceholderTemplate.*;
-import static io.github.ms5984.retrox.accessories.internal.ColorLib.processDisplayName;
 
 final class CategoriesService {
     private final LinkedHashMap<String, CategoryImpl> categories = new LinkedHashMap<>();
@@ -89,12 +90,12 @@ final class CategoriesService {
     }
 
     static String parseDisplayName(String displayName) {
-        if (displayName != null) return processDisplayName(displayName);
+        if (displayName != null) return TagLib.ampersand(displayName).displayNameOverride();
         return DEFAULT_DISPLAY_NAME;
     }
 
     static List<String> parseLore(@NotNull List<String> lore) {
-        if (!lore.isEmpty()) return lore.stream().map(ColorLib::processLoreLine).collect(Collectors.toList());
+        if (!lore.isEmpty()) return lore.stream().map(TagLib::ampersand).map(LegacyTextProcessor::loreLineOverride).collect(Collectors.toList());
         return List.copyOf(DEFAULT_LORE);
     }
 }
