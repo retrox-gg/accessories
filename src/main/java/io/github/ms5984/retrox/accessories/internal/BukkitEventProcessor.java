@@ -19,6 +19,8 @@ import io.github.ms5984.retrox.accessories.api.AccessoryService;
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
 import io.github.ms5984.retrox.accessories.events.AccessoryPreActivateEvent;
 import io.github.ms5984.retrox.accessories.events.AccessoryPreDeactivateEvent;
+import io.github.ms5984.retrox.accessories.events.AccessorySpecialActionEvent;
+import io.github.ms5984.retrox.accessories.model.SpecialAction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -99,6 +101,23 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                     final var currentItem = event.getCurrentItem();
                     // Is this an accessory?
                     if (AccessoryService.getInstance().test(currentItem)) {
+                        // Check for special action
+                        if (switch (event.getAction()) {
+                            case PICKUP_ONE -> event.isRightClick();
+                            case PICKUP_HALF -> true;
+                            default -> false;
+                        }) {
+                            // Special action Right-click
+                            Bukkit.getPluginManager().callEvent(new AccessorySpecialActionEvent(player, event.getCurrentItem(), SpecialAction.RIGHT_CLICK));
+                            return;
+                        }
+                        switch (event.getAction()) {
+                            case DROP_ALL_SLOT, DROP_ONE_SLOT -> {
+                                // Special action Drop key
+                                Bukkit.getPluginManager().callEvent(new AccessorySpecialActionEvent(player, event.getCurrentItem(), SpecialAction.DROP_KEY));
+                                return;
+                            }
+                        }
                         if (deactivateAccessory(player, currentItem)) {
                             // Inject a replacement placeholder
                             final int accessorySlot = convertSlot(event.getSlot());

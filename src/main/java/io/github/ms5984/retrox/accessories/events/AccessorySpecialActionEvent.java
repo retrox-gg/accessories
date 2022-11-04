@@ -18,6 +18,7 @@ package io.github.ms5984.retrox.accessories.events;
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
 import io.github.ms5984.retrox.accessories.internal.AccessoryHolderImpl;
 import io.github.ms5984.retrox.accessories.model.Accessory;
+import io.github.ms5984.retrox.accessories.model.SpecialAction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -33,6 +34,7 @@ public class AccessorySpecialActionEvent extends AccessoriesEvent.Cancellable {
     private static final HandlerList HANDLERS = new HandlerList(); // per Event contract
     private final @NotNull AccessoryHolder player;
     private final @Accessory ItemStack accessory;
+    private final @NotNull SpecialAction action;
 
     /**
      * Create a new event.
@@ -40,9 +42,10 @@ public class AccessorySpecialActionEvent extends AccessoriesEvent.Cancellable {
      * @param player a player
      * @param accessory an accessory
      */
-    public AccessorySpecialActionEvent(@NotNull Player player, @Accessory ItemStack accessory) {
+    public AccessorySpecialActionEvent(@NotNull Player player, @Accessory ItemStack accessory, @NotNull SpecialAction action) {
         this.player = new AccessoryHolderImpl(player);
         this.accessory = accessory;
+        this.action = action;
     }
 
     /**
@@ -61,6 +64,15 @@ public class AccessorySpecialActionEvent extends AccessoriesEvent.Cancellable {
      */
     public @Accessory ItemStack getAccessory() {
         return accessory;
+    }
+
+    /**
+     * Get the special action performed.
+     *
+     * @return a special action type
+     */
+    public @NotNull SpecialAction getAction() {
+        return action;
     }
 
     // elements below required for Event contract
