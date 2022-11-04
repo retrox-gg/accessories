@@ -103,7 +103,7 @@ record BukkitEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listen
                     if (AccessoryService.getInstance().test(currentItem)) {
                         // Check for special action
                         if (switch (event.getAction()) {
-                            case PICKUP_ONE -> event.isRightClick();
+                            case PICKUP_ONE, MOVE_TO_OTHER_INVENTORY -> event.isRightClick();
                             case PICKUP_HALF -> true;
                             default -> false;
                         }) {
