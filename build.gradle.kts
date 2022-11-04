@@ -18,11 +18,11 @@ repositories {
 }
 
 dependencies {
+    implementation("io.github.ms5984.libraries:tag-lib:0.0.1")
     implementation("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
 }
 
 group = "io.github.ms5984.retrox"
-version = if (findProperty("version")!! != Project.DEFAULT_VERSION) version else "0.1.1"
 description = "A player accessories system for Retrox"
 
 java {
