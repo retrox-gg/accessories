@@ -5,4 +5,4 @@ api-version: 1.19
 authors: [ ms5984 ]
 description: ${project.description}
 libraries:
-  - "io.github.ms5984.libraries:tag-lib:0.0.1"
+  - "io.github.ms5984.libraries:tag-lib:${tagLibVersion}"
