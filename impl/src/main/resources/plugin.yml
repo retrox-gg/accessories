@@ -6,3 +6,4 @@ authors: [ ms5984 ]
 description: ${project.description}
 libraries:
   - "io.github.ms5984.libraries:tag-lib:${tagLibVersion}"
+  - "org.jetbrains.kotlin:kotlin-stdlib:${project.kotlinVersion}"
