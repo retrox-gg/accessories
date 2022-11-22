@@ -31,6 +31,7 @@ tasks.withType<ProcessResources> {
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    archiveFileName.set("${rootProject.name}-plugin-${project.version}.jar")
     archiveClassifier.set("plugin")
     dependencies {
         include(project(":api"))
