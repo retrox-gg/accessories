@@ -17,12 +17,15 @@ package io.github.ms5984.retrox.accessories.internal;
 
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
 import io.github.ms5984.retrox.accessories.api.AccessorySlot;
+import io.github.ms5984.retrox.accessories.model.Category;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 /**
+ * Internal implementation of {@link AccessorySlot}.
+ *
  * @param index the index of this slot
  * @param category the accessory category of this slot
  * @since 0.1.1
  */
-record AccessorySlotImpl(@Range(from = 0, to = AccessoryHolder.SLOTS - 1) int index, @NotNull CategoryImpl category) implements AccessorySlot {}
+public record AccessorySlotImpl(@Range(from = 0, to = AccessoryHolder.MAX_SLOT_INDEX) int index, @NotNull Category category) implements AccessorySlot {}

@@ -39,6 +39,11 @@ public interface AccessoryHolder {
     int SLOTS = 4;
 
     /**
+     * The relative index of the last accessory slot.
+     */
+    long MAX_SLOT_INDEX = SLOTS - 1;
+
+    /**
      * Get the accessory in a given slot.
      * <p>
      * Slots are zero-indexed, left to right.
@@ -46,7 +51,7 @@ public interface AccessoryHolder {
      * @param slot the slot to check
      * @return the accessory in the slot or null if none
      */
-    @Accessory @Nullable ItemStack getAccessory(@Range(from = 0, to = SLOTS-1) int slot);
+    @Accessory @Nullable ItemStack getAccessory(@Range(from = 0, to = MAX_SLOT_INDEX) int slot);
 
     /**
      * Get all active accessories.

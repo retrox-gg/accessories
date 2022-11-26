@@ -1,4 +1,4 @@
-package io.github.ms5984.retrox.accessories.api;
+package io.github.ms5984.retrox.accessories.internal;
 /*
  *  Copyright 2022 ms5984, Retrox
  *
@@ -15,21 +15,19 @@ package io.github.ms5984.retrox.accessories.api;
  *  limitations under the License.
  */
 
-import org.jetbrains.annotations.ApiStatus;
+import io.github.ms5984.retrox.accessories.model.Category;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a category.
+ * Internal implementation of {@link Category}.
  *
- * @since 0.1.0
- * @author ms5984
+ * @since 0.3.0
+ * @param id the identifier
  */
-@ApiStatus.NonExtendable
-public interface Category {
-    /**
-     * Get the name of this category.
-     *
-     * @return the name
-     */
-    @NotNull String name();
+public record CategoryImpl(@NotNull @Id String id) implements Category {
+    @Override
+    public @NotNull @Id String getId() {
+        //noinspection PatternValidation
+        return id;
+    }
 }

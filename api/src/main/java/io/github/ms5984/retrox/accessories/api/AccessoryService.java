@@ -16,12 +16,14 @@ package io.github.ms5984.retrox.accessories.api;
  */
 
 import io.github.ms5984.retrox.accessories.model.Accessory;
+import io.github.ms5984.retrox.accessories.model.Category;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -33,7 +35,7 @@ import java.util.function.Predicate;
  * @author ms5984
  */
 @ApiStatus.NonExtendable
-public interface AccessoryService extends Predicate<ItemStack> {
+public interface AccessoryService extends Predicate<@Nullable ItemStack> {
     /**
      * Check if an item is an accessory.
      *
@@ -42,7 +44,7 @@ public interface AccessoryService extends Predicate<ItemStack> {
      */
     @Override
     @Contract("null -> false")
-    boolean test(ItemStack itemStack);
+    boolean test(@Nullable ItemStack itemStack);
 
     /**
      * Get the namespaced key used to identify accessory items.
@@ -68,7 +70,7 @@ public interface AccessoryService extends Predicate<ItemStack> {
      * @return the category of the accessory, if present
      * @since 0.1.1
      */
-    @NotNull Optional<? extends Category> resolveNBT(@Accessory @NotNull ItemStack item);
+    @NotNull Optional<? extends Category> resolveNBT(@Accessory ItemStack item);
 
     /**
      * Get the current service instance.

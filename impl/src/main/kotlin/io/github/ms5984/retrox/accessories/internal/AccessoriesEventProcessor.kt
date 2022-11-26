@@ -1,4 +1,4 @@
-package io.github.ms5984.retrox.accessories.internal;
+package io.github.ms5984.retrox.accessories.internal
 /*
  *  Copyright 2022 ms5984, Retrox
  *
@@ -15,29 +15,28 @@ package io.github.ms5984.retrox.accessories.internal;
  *  limitations under the License.
  */
 
-import io.github.ms5984.retrox.accessories.api.AccessoryService;
-import io.github.ms5984.retrox.accessories.events.AccessoryPreActivateEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
+import io.github.ms5984.retrox.accessories.api.AccessoryService
+import io.github.ms5984.retrox.accessories.events.AccessoryPreActivateEvent
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
 
 /**
  * @since 0.1.1
- * @param plugin plugin instance
  */
-record AccessoriesEventProcessor(@NotNull AccessoriesPlugin plugin) implements Listener {
+internal object AccessoriesEventProcessor: Listener {
     // prevent placement of accessories in slots according to category
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onAccessoryActivateCategoryDetect(AccessoryPreActivateEvent event) {
+    fun onAccessoryActivateCategoryDetect(event: AccessoryPreActivateEvent) {
         // If the accessory is not in the category, cancel the event
-        final var category = event.getTargetSlot().category();
+        val category = event.targetSlot.category()
         if (AccessoryService.getInstance()
-                .resolveNBT(event.getActivatingAccessory())
-                .filter(category::equals)
-                .isEmpty()) {
+                .resolveNBT(event.activatingAccessory)
+                .filter { obj: Any? -> category == obj }
+                .isEmpty
+        ) {
             // The category is not the same
-            event.setCancelled(true);
+            event.isCancelled = true
         }
     }
 }

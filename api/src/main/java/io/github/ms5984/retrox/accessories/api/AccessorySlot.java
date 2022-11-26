@@ -15,6 +15,7 @@ package io.github.ms5984.retrox.accessories.api;
  *  limitations under the License.
  */
 
+import io.github.ms5984.retrox.accessories.model.Category;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -32,7 +33,7 @@ public interface AccessorySlot {
      *
      * @return the index of this slot
      */
-    @Range(from = 0, to = AccessoryHolder.SLOTS - 1) int index();
+    @Range(from = 0, to = AccessoryHolder.MAX_SLOT_INDEX) int index();
 
     /**
      * Get the category of this slot.

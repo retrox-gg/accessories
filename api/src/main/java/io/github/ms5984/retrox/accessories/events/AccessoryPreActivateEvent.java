@@ -16,11 +16,10 @@ package io.github.ms5984.retrox.accessories.events;
  */
 
 import io.github.ms5984.retrox.accessories.api.AccessoryHolder;
-import io.github.ms5984.retrox.accessories.api.AccessoryService;
 import io.github.ms5984.retrox.accessories.api.AccessorySlot;
-import io.github.ms5984.retrox.accessories.api.Category;
 import io.github.ms5984.retrox.accessories.internal.AccessoryHolderImpl;
 import io.github.ms5984.retrox.accessories.model.Accessory;
+import io.github.ms5984.retrox.accessories.model.Category;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -35,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 public final class AccessoryPreActivateEvent extends AccessoriesEvent.Cancellable {
     private static final HandlerList HANDLERS = new HandlerList(); // per Event contract
     private final @NotNull AccessoryHolder player;
+    private final @NotNull Category category;
     private final @Accessory ItemStack activatingAccessory;
     private final @NotNull AccessorySlot slot;
 
@@ -42,11 +42,16 @@ public final class AccessoryPreActivateEvent extends AccessoriesEvent.Cancellabl
      * Create a new event.
      *
      * @param player the player activating the accessory
+     * @param category the category of the activating accessory
      * @param activatingAccessory the accessory being activated
      * @param slot the slot the accessory is being activated on
      */
-    public AccessoryPreActivateEvent(@NotNull Player player, @Accessory ItemStack activatingAccessory, @NotNull AccessorySlot slot) {
+    public AccessoryPreActivateEvent(@NotNull Player player,
+                                     @NotNull Category category,
+                                     @Accessory ItemStack activatingAccessory,
+                                     @NotNull AccessorySlot slot) {
         this.player = new AccessoryHolderImpl(player);
+        this.category = category;
         this.activatingAccessory = activatingAccessory;
         this.slot = slot;
     }
@@ -80,14 +85,13 @@ public final class AccessoryPreActivateEvent extends AccessoriesEvent.Cancellabl
     }
 
     /**
-     * Get the category to which the accessory belongs.
+     * Get the category to which the activating accessory belongs.
      *
-     * @return a category object
-     * @throws IllegalStateException if the category cannot be loaded
+     * @return the accessory category
      * @since 0.1.1
      */
-    @NotNull Category getCategory() throws IllegalStateException {
-        return AccessoryService.getInstance().resolveNBT(activatingAccessory).orElseThrow(IllegalStateException::new);
+    public @NotNull Category getCategory() {
+        return category;
     }
 
     // elements below required for Event contract

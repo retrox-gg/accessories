@@ -28,6 +28,7 @@ import java.util.Map;
 
 public class AccessoryHolderImpl implements AccessoryHolder {
     static final int FIRST_ACCESSORY_SLOT_ID = 9; // Implementation specific, hide from public API
+    static final long LAST_ACCESSORY_SLOT_ID = FIRST_ACCESSORY_SLOT_ID + MAX_SLOT_INDEX;
     private final Player player;
     private final ItemStack[] accessorySlots;
 
@@ -38,7 +39,7 @@ public class AccessoryHolderImpl implements AccessoryHolder {
     }
 
     @Override
-    public @Accessory @Nullable ItemStack getAccessory(@Range(from = 0, to = SLOTS-1) int slot) {
+    public @Accessory @Nullable ItemStack getAccessory(@Range(from = 0, to = MAX_SLOT_INDEX) int slot) {
         return accessorySlots[slot];
     }
 
