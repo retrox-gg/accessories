@@ -23,7 +23,7 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
 class AccessoryServiceImpl(private val key: NamespacedKey): AccessoryService {
-    // check for presence of ~~any data~~ (String data proper) persisted using provided key
+    // check for presence of String data persisted using provided key
     override fun test(itemStack: ItemStack?): Boolean =
         itemStack?.takeIf(ItemStack::hasItemMeta)?.itemMeta?.persistentDataContainer?.has(key, PersistentDataType.STRING) ?: false
 

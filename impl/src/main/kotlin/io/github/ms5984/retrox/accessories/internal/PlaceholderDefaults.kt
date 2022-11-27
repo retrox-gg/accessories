@@ -23,7 +23,14 @@ const val DEFAULT_DISPLAY_NAME = "<name>"
 const val DEFAULT_CUSTOM_MODEL_DATA = 1
 val DEFAULT_LORE = listOf("No <name> Activated")
 
+val DEFAULT_TEMPLATE by lazy { CategoryDataImpl.PlaceholderTemplate(
+    DEFAULT_MATERIAL,
+    parseDisplayName(null),
+    DEFAULT_CUSTOM_MODEL_DATA,
+    parseLore(emptyList())
+) }
+
 fun parseMaterial(materialName: String?) = materialName?.let { Material.matchMaterial(it) } ?: DEFAULT_MATERIAL
 fun parseDisplayName(displayName: String?) = (displayName ?: DEFAULT_DISPLAY_NAME).let { TagLib.ampersand(it).displayNameOverride() }
 fun parseCustomModelData(customModelData: Int?) = customModelData.takeUnless { it == 0 } ?: DEFAULT_CUSTOM_MODEL_DATA
-fun parseLore(lore: List<String>?) = (lore ?: DEFAULT_LORE).map { TagLib.ampersand(it).loreLineOverride() }
+fun parseLore(lore: List<String>) = (lore.takeUnless { it.isEmpty() } ?: DEFAULT_LORE).map { TagLib.ampersand(it).loreLineOverride() }

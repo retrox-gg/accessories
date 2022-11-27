@@ -90,7 +90,7 @@ fun Player.refreshAccessories() {
             }
         }
         // set/update/replace with placeholder
-        inventory.setItem(calculatedSlotIndex, plugin.placeholderUtil.generatePlaceholder(category, i))
+        inventory.setItem(calculatedSlotIndex, plugin.placeholderUtil.getPlaceholder(category, i))
     }
 }
 

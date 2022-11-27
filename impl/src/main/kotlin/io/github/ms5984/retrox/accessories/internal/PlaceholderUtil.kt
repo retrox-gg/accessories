@@ -26,11 +26,14 @@ import java.util.function.Predicate
 
 class PlaceholderUtil(private val plugin: AccessoriesPlugin,
                       private val placeholderKey: NamespacedKey): Predicate<ItemStack?> {
-    private val emptyTemplate by lazy(CategoryDataImpl::PlaceholderTemplate)
+    internal val cachedResolutions = mutableMapOf<AccessorySlotImpl, ItemStack>()
 
-    fun generatePlaceholder(category: Category, slot: @Range(from = 0L, to = AccessoryHolder.MAX_SLOT_INDEX) Int): ItemStack =
+    fun getPlaceholder(category: Category, slot: @Range(from = 0L, to = AccessoryHolder.MAX_SLOT_INDEX) Int): ItemStack =
+        cachedResolutions.getOrPut(AccessorySlotImpl(slot, category)) { generatePlaceholder(category, slot) }
+
+    private fun generatePlaceholder(category: Category, slot: Int): ItemStack =
         plugin.categoryDataService.resolve(category).let { data ->
-            (data?.placeholderTemplate ?: emptyTemplate).let { template ->
+            (data?.placeholderTemplate ?: DEFAULT_TEMPLATE).let { template ->
                 ItemStack(template.material).apply {
                     itemMeta = itemMeta.apply {
                         val namePlaceholder = Placeholder.parsed("name", data?.displayName ?: category.id)

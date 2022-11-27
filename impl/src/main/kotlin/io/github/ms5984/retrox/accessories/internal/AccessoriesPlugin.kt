@@ -53,6 +53,8 @@ class AccessoriesPlugin: JavaPlugin() {
     override fun onDisable() {
         // Plugin shutdown logic
         HandlerList.unregisterAll(this)
+        // Clear placeholder cache
+        placeholderUtil.cachedResolutions.clear()
         // Unregister services
         server.servicesManager.unregisterAll(this)
     }

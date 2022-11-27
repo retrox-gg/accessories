@@ -74,7 +74,7 @@ class BukkitEventProcessor(private val plugin: AccessoriesPlugin): Listener {
                         ?: event.slot.convertSlot().getCategory() // Fallback to category of the slot
                     if (player.deactivateAccessory(currentItem!!, category)) {
                         // Inject a replacement placeholder
-                        event.slot.convertSlot().let { plugin.placeholderUtil.generatePlaceholder(it.getCategory(), it) }
+                        event.slot.convertSlot().let { plugin.placeholderUtil.getPlaceholder(it.getCategory(), it) }
                             .let { player.inventory.setItem(event.slot, it) }
                         // Place the accessory on the cursor
                         player.setItemOnCursor(currentItem)

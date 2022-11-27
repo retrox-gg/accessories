@@ -28,6 +28,7 @@ class CategoryDataServiceImpl(private val plugin: AccessoriesPlugin): CategoryDa
         plugin.config.getConfigurationSection("categories")?.run {
             val idRegex = Category.ID_FORMAT.toRegex()
             var skips = false
+            var slot = 0
             // this = top-level categories section (section of sections)
             for (id in getKeys(false)) {
                 val category = id.takeIf { it.matches(idRegex) }?.let(::CategoryImpl)
@@ -48,9 +49,11 @@ class CategoryDataServiceImpl(private val plugin: AccessoriesPlugin): CategoryDa
                             parseCustomModelData(getInt("custom-model-data")),
                             parseLore(getStringList("lore"))
                         )
-                    } ?: CategoryDataImpl.PlaceholderTemplate()
+                    } ?: DEFAULT_TEMPLATE
                     if (name == null) data[category] = CategoryDataImpl({ category }, template)
                     else data[category] = CategoryDataImpl({ category }, template, mutableMapOf("display-name" to name))
+                    // Pre-generate placeholders on startup
+                    plugin.placeholderUtil.getPlaceholder(category, slot++)
                 }
             }
             if (skips) plugin.logger.apply {

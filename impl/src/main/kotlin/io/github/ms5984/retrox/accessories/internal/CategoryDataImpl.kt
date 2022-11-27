@@ -27,7 +27,7 @@ data class CategoryDataImpl(val categoryImpl: () -> CategoryImpl,
         val displayName: String,
         val customModelData: Int,
         val lore: List<String>
-    ) { constructor() : this(DEFAULT_MATERIAL, parseDisplayName(null), DEFAULT_CUSTOM_MODEL_DATA, parseLore(null)) }
+    )
 
     override fun getCategory(): Category = categoryImpl()
     override fun getDisplayName(): String = data["display-name"]?.let { it as? String } ?: categoryImpl().id
