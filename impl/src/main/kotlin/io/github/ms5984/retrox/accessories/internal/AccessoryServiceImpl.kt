@@ -30,9 +30,13 @@ class AccessoryServiceImpl(private val key: NamespacedKey): AccessoryService {
     override fun key(): NamespacedKey = key
 
     override fun addNBT(item: ItemStack, category: Category): Boolean =
-        item.itemMeta.persistentDataContainer.run {
-            if (has(key, PersistentDataType.STRING) && get(key, PersistentDataType.STRING) == category.id) return false
-            set(key, PersistentDataType.STRING, category.id)
+        item.run {
+            if (hasItemMeta()) itemMeta.persistentDataContainer.run {
+                if (has(key, PersistentDataType.STRING) && get(key, PersistentDataType.STRING) == category.id) return false
+            }
+            itemMeta = itemMeta.apply {
+                persistentDataContainer.set(key, PersistentDataType.STRING, category.id)
+            }
             return true
         }
 

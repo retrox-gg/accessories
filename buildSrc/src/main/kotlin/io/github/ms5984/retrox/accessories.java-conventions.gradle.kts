@@ -13,6 +13,7 @@ repositories {
 val tagLibVersion by extra("0.0.2")
 
 dependencies {
+    compileOnly("org.jetbrains:annotations:23.0.0")
     implementation("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
     implementation("io.github.ms5984.libraries:tag-lib:$tagLibVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
