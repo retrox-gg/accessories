@@ -24,7 +24,4 @@ jobs:
       - name: Gradle Dependency Submission
         uses: mikepenz/gradle-dependency-submission@v0.8.3
         with:
-          gradle-build-module: |-
-            :api
-            :impl
-          sub-module-mode: INDIVIDUAL
+          sub-module-mode: INDIVIDUAL_DEEP
