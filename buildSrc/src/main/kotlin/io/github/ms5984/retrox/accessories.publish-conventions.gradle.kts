@@ -1,7 +1,18 @@
 import java.util.Base64
 
 plugins {
+    java
     `maven-publish`
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+tasks.withType<Javadoc> {
+    (options as StandardJavadocDocletOptions).addBooleanOption("Xdoclint:reference", true)
+    options.quiet()
 }
 
 afterEvaluate {

@@ -10,7 +10,7 @@ repositories {
     }
 }
 
-val tagLibVersion by extra("0.0.2")
+val tagLibVersion by extra("0.0.3")
 
 dependencies {
     compileOnly("org.jetbrains:annotations:23.0.0")
@@ -22,15 +22,8 @@ dependencies {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
-    withJavadocJar()
-    withSourcesJar()
 }
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
-}
-
-tasks.withType<Javadoc> {
-    (options as StandardJavadocDocletOptions).addBooleanOption("Xdoclint:reference", true)
-    options.quiet()
 }
