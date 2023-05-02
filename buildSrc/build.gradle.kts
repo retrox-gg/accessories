@@ -6,6 +6,8 @@ repositories {
     mavenCentral()
 }
 
-kotlinDslPluginOptions {
-    jvmTarget.set("17")
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
